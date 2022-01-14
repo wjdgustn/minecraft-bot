@@ -1,0 +1,44 @@
+{
+  "name": "minecraft-bot",
+  "version": "1.0.0",
+  "description": "Minecraft discord bot.",
+  "main": "main.js",
+  "scripts": {
+    "test": "npx nodemon --signal SIGKILL main.js --debug"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wjdgustn/minecraft-bot.git"
+  },
+  "author": "HYONSU",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/wjdgustn/minecraft-bot/issues"
+  },
+  "homepage": "https://github.com/wjdgustn/minecraft-bot#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "bcrypt": "^5.0.1",
+    "bunyan": "^1.8.15",
+    "discord.js": "^13.5.1",
+    "dokdo": "github:pikokr/dokdo#ansi",
+    "express": "^4.17.2",
+    "ftp-srv": "^4.5.0",
+    "json5": "^2.2.0",
+    "mongoose": "^6.1.6",
+    "portfinder": "^1.0.28",
+    "properties": "^1.2.1",
+    "rimraf": "^3.0.2",
+    "unique-string": "^2.0.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "commands/*",
+      "selectHandler/*",
+      "buttonHandler/*"
+    ]
+  }
+}

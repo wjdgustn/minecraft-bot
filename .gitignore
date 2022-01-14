@@ -1,0 +1,15 @@
+/.idea/
+/node_modules/
+setting.json
+server.json
+
+/assets/paper/
+/assets/plugins
+/assets/waterfall.jar
+
+/waterfall/config.yml
+/waterfall/modules.yml
+/waterfall/waterfall.yml
+/waterfall/logs/
+/waterfall/modules/
+/waterfall/plugins/

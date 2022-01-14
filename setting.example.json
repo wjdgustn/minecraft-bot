@@ -1,0 +1,27 @@
+{
+  "TOKEN": "",
+
+  "DOKDO_PREFIX": ";",
+
+  "PORT": 7999,
+  "WEB_IP": "127.0.0.10",
+  "FTP_PORT": 21,
+
+  "FTP_ADMIN_PASSWORD": "secret",
+
+  "WATERFALL_CONSOLE_CHANNEL": "",
+
+  "MC_SERVER_IP": "127.0.0.10",
+  "MC_ADDR_RULE": "[CUSTOM].example.com",
+  "MAX_SUBDOMAIN_LENGTH": 16,
+  "JAVA_17_PATH": "java17",
+  "JAVA_PATH": "java",
+  "MC_SERVER_PATH": "",
+  "PAPER_API_URL": "https://papermc.io/api/v2",
+
+  "MONGODB_HOST": "localhost",
+  "MONGODB_PORT": 27017,
+  "MONGODB_USER": "user",
+  "MONGODB_PASSWORD": "pw",
+  "DBNAME": "MinecraftBot"
+}
