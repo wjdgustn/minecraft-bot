@@ -210,7 +210,7 @@ const registerCommands = async () => {
         await client.application.commands.set(commands);
         console.log('registered global command. registering guild command...');
 
-        const guildCommandInfo = await client.guilds.cache.get(process.argv[3] || Server.adofai_gg).commands.set(privateCommands);
+        const guildCommandInfo = await client.guilds.cache.get(process.argv[3]).commands.set(privateCommands);
         console.log('registered guild command. registering guild command permission...');
         const fullPermissions = [];
         for (let c of guildCommandInfo) {
@@ -222,7 +222,7 @@ const registerCommands = async () => {
                 permissions: permissions[c[1].name]
             });
         }
-        await client.guilds.cache.get(process.argv[3] || Server.adofai_gg).commands.permissions.set({
+        await client.guilds.cache.get(process.argv[3]).commands.permissions.set({
             fullPermissions
         });
 
