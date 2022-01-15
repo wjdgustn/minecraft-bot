@@ -78,6 +78,9 @@ module.exports = class Server extends Process {
         const serverPath = path.resolve(setting.MC_SERVER_PATH, `server_${id}`);
         if(!fs.existsSync(serverPath)) fs.mkdirSync(serverPath);
 
+        const paperDir = path.resolve(`./assets/paper/${server.version}.jar`);
+        if(!fs.existsSync(paperDir)) paper.download(server.version);
+
         const useJava17 = Number(server.version.split('.')[1]) >= 17;
         super(`server_${id}`, useJava17 ? setting.JAVA_17_PATH : setting.JAVA_PATH, {
             cwd: serverPath,
