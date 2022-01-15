@@ -122,8 +122,8 @@ module.exports = class Server extends Process {
                 'false',
                 '--add-plugin',
                 path.resolve('./assets/plugins/worldedit.jar'),
-                // '--add-plugin',
-                // path.resolve('./assets/plugins/minecraftBotPaper.jar')
+                '--add-plugin',
+                path.resolve('./assets/plugins/minecraftBotPaper.jar')
             ]
         });
 
