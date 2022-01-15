@@ -13,14 +13,14 @@ module.exports = async interaction => {
     
     const { options } = interaction;
 
-    const name = options.getString('name');
-    const subDomain = options.getString('domain');
-    const memory = options.getInteger('memory');
-    const version = options.getString('version');
-    const ftpUsername = options.getString('ftpusername');
-    const ftpPassword = options.getString('ftppassword');
-    const serverStatusMessage = options.getBoolean('serverstatusmessage');
-    const autoRestart = options.getBoolean('autorestart') && interaction.dbUser.allowAutorestart;
+    const name = options.getString('name') || undefined;
+    const subDomain = options.getString('domain') || undefined;
+    const memory = options.getInteger('memory') || undefined;
+    const version = options.getString('version') || undefined;
+    const ftpUsername = options.getString('ftpusername') || undefined;
+    const ftpPassword = options.getString('ftppassword') || undefined;
+    const serverStatusMessage = options.getBoolean('serverstatusmessage') || undefined;
+    const autoRestart = (options.getBoolean('autorestart') || interaction.dbServer.autoRestart) && interaction.dbUser.allowAutorestart;
     
     if(subDomain && subDomain.length > setting.MAX_SUBDOMAIN_LENGTH) return interaction.editReply('도메인이 너무 깁니다.');
     if(memory && memory > interaction.dbUser.maxMemory) return interaction.editReply('사용 가능한 메모리를 초과했습니다.');
