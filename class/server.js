@@ -241,13 +241,13 @@ module.exports = class Server extends Process {
             if(logs !== beforeLogs) {
                 if(this.logTimeout) clearTimeout(this.logTimeout);
                 this.logTimeout = setTimeout(async () => {
-                    const array = utils.chunkAsArray(logs, 3950);
+                    const array = utils.chunkAsArray(Util.escapeMarkdown(logs), 4000);
                     logs = '';
                     for(let s of array) await utils.sendWebhookMessage(this.consoleChannel, {
                         username: '서버 로그',
                         avatarURL: client.user.avatarURL()
                     }, {
-                        content: Util.escapeMarkdown(s)
+                        content: s
                     });
 
                     this.logTimeout = null;

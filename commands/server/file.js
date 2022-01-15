@@ -19,11 +19,11 @@ module.exports = async interaction => {
     if(!fs.existsSync(filePath)) return interaction.editReply('파일이 존재하지 않습니다!');
 
     const file = fs.readFileSync(filePath);
-    const fileString = file.toString();
+    const fileString = Util.escapeCodeBlock(file.toString());
 
     const msg = await interaction.editReply({
-        content: fileString.length <= 3950 ? `\`\`\`\n${Util.escapeCodeBlock(fileString)}\n\`\`\`` : null,
-        files: fileString.length > 3950 ? [
+        content: fileString.length <= 4000 ? `\`\`\`\n${fileString}\n\`\`\`` : null,
+        files: fileString.length > 4000 ? [
             {
                 name: fileName,
                 attachment: file
