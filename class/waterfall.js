@@ -1,4 +1,3 @@
-const { MessageEmbed , Util } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
@@ -105,12 +104,7 @@ module.exports = class Waterfall extends Process {
                     username: '서버 로그',
                     avatarURL: client.user.avatarURL()
                 }, {
-                    embeds: [
-                        new MessageEmbed()
-                            .setColor('#349eeb')
-                            .setTitle('시작 로그')
-                            .setDescription(`\`\`\`\n${Util.escapeCodeBlock(l)}\n\`\`\``)
-                    ]
+                    content: Util.escapeMarkdown(l)
                 });
 
                 return;
@@ -120,7 +114,7 @@ module.exports = class Waterfall extends Process {
             if(!this.starting) {
                 if(this.logTimeout) clearTimeout(this.logTimeout);
                 this.logTimeout = setTimeout(async () => {
-                    for(let s of utils.chunkAsArray(logs, 1950)) await utils.sendWebhookMessage(this.consoleChannel, {
+                    for(let s of utils.chunkAsArray(logs, 3950)) await utils.sendWebhookMessage(this.consoleChannel, {
                         username: '서버 로그',
                         avatarURL: client.user.avatarURL()
                     }, {

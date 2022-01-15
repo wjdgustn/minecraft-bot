@@ -22,8 +22,8 @@ module.exports = async interaction => {
     const fileString = file.toString();
 
     const msg = await interaction.editReply({
-        content: fileString.length <= 1950 ? `\`\`\`\n${Util.escapeCodeBlock(fileString)}\n\`\`\`` : null,
-        files: fileString.length > 1950 ? [
+        content: fileString.length <= 3950 ? `\`\`\`\n${Util.escapeCodeBlock(fileString)}\n\`\`\`` : null,
+        files: fileString.length > 3950 ? [
             {
                 name: fileName,
                 attachment: file
