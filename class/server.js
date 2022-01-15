@@ -206,14 +206,14 @@ module.exports = class Server extends Process {
 
                 this.stdin(`setupserver ${this.id} http://${setting.WEB_IP}:${setting.PORT}`);
 
-                const logsArray = utils.chunkAsArray(logs, 3950);
-                logs = '';
-                for(let l of logsArray) await utils.sendWebhookMessage(this.consoleChannel, {
-                    username: '서버 로그',
-                    avatarURL: client.user.avatarURL()
-                }, {
-                    content: Util.escapeMarkdown(l)
-                });
+                // const logsArray = utils.chunkAsArray(logs, 3950);
+                // logs = '';
+                // for(let l of logsArray) await utils.sendWebhookMessage(this.consoleChannel, {
+                //     username: '서버 로그',
+                //     avatarURL: client.user.avatarURL()
+                // }, {
+                //     content: Util.escapeMarkdown(l)
+                // });
 
                 await utils.sendWebhookMessage(this.chatChannel, {
                     username: '서버 알림',
@@ -225,8 +225,8 @@ module.exports = class Server extends Process {
                             .setTitle('서버가 시작되었습니다.')
                     ]
                 });
-
-                return;
+                //
+                // return;
             }
 
             if(log.includes('Reload complete.') && !log.includes('>'))
@@ -235,17 +235,18 @@ module.exports = class Server extends Process {
             const beforeLogs = logs;
             logs += `\n${log}`;
             logs = logs.trim();
-            if(!this.starting && logs !== beforeLogs) {
+            if(logs !== beforeLogs) {
                 if(this.logTimeout) clearTimeout(this.logTimeout);
                 this.logTimeout = setTimeout(async () => {
-                    for(let s of utils.chunkAsArray(logs, 3950)) await utils.sendWebhookMessage(this.consoleChannel, {
+                    const array = utils.chunkAsArray(logs, 3950);
+                    logs = '';
+                    for(let s of array) await utils.sendWebhookMessage(this.consoleChannel, {
                         username: '서버 로그',
                         avatarURL: client.user.avatarURL()
                     }, {
                         content: Util.escapeMarkdown(s)
                     });
 
-                    logs = '';
                     this.logTimeout = null;
                 }, 100);
             }

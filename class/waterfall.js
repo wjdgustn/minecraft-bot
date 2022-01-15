@@ -99,30 +99,33 @@ module.exports = class Waterfall extends Process {
 
             if(this.starting && log.includes('Listening on')) {
                 this.starting = false;
-                const logsArray = utils.chunkAsArray(logs, 3950);
-                logs = '';
-                for(let l of logsArray) await utils.sendWebhookMessage(this.consoleChannel, {
-                    username: '서버 로그',
-                    avatarURL: client.user.avatarURL()
-                }, {
-                    content: Util.escapeMarkdown(l)
-                });
-
-                return;
+                // const logsArray = utils.chunkAsArray(logs, 3950);
+                // logs = '';
+                // for(let l of logsArray) await utils.sendWebhookMessage(this.consoleChannel, {
+                //     username: '서버 로그',
+                //     avatarURL: client.user.avatarURL()
+                // }, {
+                //     content: Util.escapeMarkdown(l)
+                // });
+                //
+                // return;
             }
 
-            logs += `${log}\n`;
-            if(!this.starting) {
+            const beforeLogs = logs;
+            logs += `\n${log}`;
+            logs = logs.trim();
+            if(logs !== beforeLogs) {
                 if(this.logTimeout) clearTimeout(this.logTimeout);
                 this.logTimeout = setTimeout(async () => {
-                    for(let s of utils.chunkAsArray(logs, 3950)) await utils.sendWebhookMessage(this.consoleChannel, {
+                    const array = utils.chunkAsArray(logs, 3950);
+                    logs = '';
+                    for(let s of array) await utils.sendWebhookMessage(this.consoleChannel, {
                         username: '서버 로그',
                         avatarURL: client.user.avatarURL()
                     }, {
-                        content: Util.escapeMarkdown(log)
+                        content: Util.escapeMarkdown(s)
                     });
 
-                    logs = '';
                     this.logTimeout = null;
                 }, 100);
             }
