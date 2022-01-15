@@ -146,7 +146,7 @@ app.get('/api/achievement', (req, res) => {
 
     achievementTimeouts[serverID][uuid] = setTimeout(async () => {
         const array = achievements[serverID][uuid];
-        const description = array.length > 3 ? `목표 ${array.length}개를 달성했습니다!` : `${array.join(', ')} 목표를 달성했습니다!`
+        const description = array.length > 3 ? `발전 과제 ${array.length}개를 달성했습니다!` : `${array.join(', ')} 발전 과제를 달성했습니다!`
 
         achievements[serverID][uuid] = [];
 
