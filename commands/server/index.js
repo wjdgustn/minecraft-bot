@@ -121,6 +121,11 @@ module.exports = {
                         }))
                     }
                 ]
+            },
+            {
+                name: 'resetworld',
+                description: '마인크래프트 서버의 월드를 초기화합니다.',
+                type: 'SUB_COMMAND'
             }
         ]
     },

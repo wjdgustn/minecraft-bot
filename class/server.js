@@ -288,6 +288,11 @@ module.exports = class Server extends Process {
         else finalDelete();
     }
 
+    resetWorld() {
+        if(this.isRunning) return;
+        rimraf.sync(path.resolve(this.path, 'worlds'));
+    }
+
     async updateDB(data = {}) {
         const result = await ServerDB.findOneAndUpdate({
             id: this.id
