@@ -20,7 +20,7 @@ const required_dir = [
 ];
 
 const auto_dl = {
-    './waterfall/plugins/minecraftBotWaterfall-1.0-SNAPSHOT.jar': 'https://cdn.discordapp.com/attachments/389391148797657089/931412291864367144/minecraftBotWaterfall-1.0-SNAPSHOT.jar'
+    './waterfall/plugins/minecraftBotWaterfall-1.0-SNAPSHOT.jar': 'https://cdn.discordapp.com/attachments/389391148797657089/931863149324414996/minecraftBotWaterfall-1.0-SNAPSHOT.jar'
 }
 
 module.exports = class Waterfall extends Process {
