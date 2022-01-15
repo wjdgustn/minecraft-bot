@@ -21,6 +21,11 @@ module.exports = async interaction => {
     const ftpPassword = options.getString('ftppassword') || undefined;
     const serverStatusMessage = options.getBoolean('serverstatusmessage') || undefined;
     const autoRestart = (options.getBoolean('autorestart') || interaction.dbServer.autoRestart) && interaction.dbUser.allowAutorestart;
+
+    const server = Server.get(interaction.dbServer.id);
+
+    if(server.isRunning && (memory !== interaction.dbServer.memory || version !== interaction.dbServer.version))
+        return interaction.editReply('메모리나 버전은 서버를 끈 상태에서만 수정할 수 있습니다!');
     
     if(subDomain && subDomain.length > setting.MAX_SUBDOMAIN_LENGTH) return interaction.editReply('도메인이 너무 깁니다.');
     if(memory && memory > interaction.dbUser.maxMemory) return interaction.editReply('사용 가능한 메모리를 초과했습니다.');
@@ -43,8 +48,7 @@ module.exports = async interaction => {
     let ftpPasswordHash;
     if(ftpPassword) ftpPasswordHash = await bcrypt.hash(ftpPassword, 12);
 
-    const server = Server.get(interaction.dbServer.id);
-    await server.updateDB({
+    const db = await server.updateDB({
         name,
         domain,
         memory,
@@ -54,6 +58,8 @@ module.exports = async interaction => {
         serverStatusMessage,
         autoRestart
     });
+
+    if(!server.isRunning) new Server(db);
 
     return interaction.editReply(`${server.name} 서버의 정보를 수정했습니다.`);
 }

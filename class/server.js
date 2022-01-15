@@ -122,8 +122,8 @@ module.exports = class Server extends Process {
                 'false',
                 '--add-plugin',
                 path.resolve('./assets/plugins/worldedit.jar'),
-                '--add-plugin',
-                path.resolve('./assets/plugins/minecraftBotPaper.jar')
+                // '--add-plugin',
+                // path.resolve('./assets/plugins/minecraftBotPaper.jar')
             ]
         });
 
@@ -294,9 +294,11 @@ module.exports = class Server extends Process {
     }
 
     async updateDB(data = {}) {
-        const result = await ServerDB.updateOne({
+        const result = await ServerDB.findOneAndUpdate({
             id: this.id
-        }, data);
+        }, data, {
+            new: true
+        });
         for(let key in data) this.db[key] = data[key];
 
         return result;

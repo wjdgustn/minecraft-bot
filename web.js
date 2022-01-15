@@ -108,6 +108,47 @@ app.get('/api/chat', async (req, res) => {
     });
 });
 
+app.get('/api/achievement', async (req, res) => {
+    const serverID = req.query.server;
+    const mcNickname = req.query.name;
+    const uuid = req.query.uuid;
+    const achievement = req.query.achievement;
+
+    if(!serverID) return res.status(400).send('Missing server');
+    if(!mcNickname) return res.status(400).send('Missing nickname');
+    if(!uuid) return res.status(400).send('Missing uuid');
+    if(!achievement) return res.status(400).send('Missing achievement');
+
+    const server = Server.get(serverID);
+    if(!server) return res.status(404).send('Server not found');
+
+    res.send('ok');
+
+    const achievementName = achievement
+        .split('/')
+        .at(-1)
+        .split('_')
+        .map(a => a.charAt(0).toUpperCase() + a.slice(1))
+        .join(' ');
+
+    return utils.sendWebhookMessage(server.chatChannel, {
+        username: mcNickname,
+        avatarURL: `https://crafatar.com/avatars/${uuid}`
+    }, {
+        embeds: [
+            new MessageEmbed()
+                .setColor('#ffff00')
+                .setTitle('발전 과제')
+                .setDescription(`${mcNickname}님이 ${achievementName} 목표를 달성했습니다!`)
+                .setThumbnail(`https://crafatar.com/avatars/${uuid}`)
+                .setTimestamp()
+        ],
+        allowedMentions: {
+            parse: []
+        }
+    });
+});
+
 app.listen(setting.PORT, setting.WEB_IP, () => {
     console.log(`webserver listening on ${setting.WEB_IP}:${setting.PORT}!`);
 });
