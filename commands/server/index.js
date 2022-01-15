@@ -20,7 +20,7 @@ const createOptions = [
     },
     {
         name: 'memory',
-        description: '서버의 메모리 용량입니다.',
+        description: '서버의 메모리 용량입니다. MB 단위입니다.',
         type: 'INTEGER',
         min_value: 1,
         required: true
