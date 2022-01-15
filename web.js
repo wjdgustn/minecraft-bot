@@ -108,7 +108,10 @@ app.get('/api/chat', async (req, res) => {
     });
 });
 
-app.get('/api/achievement', async (req, res) => {
+const achievements = {};
+const achievementTimeouts = {};
+
+app.get('/api/achievement', (req, res) => {
     const serverID = req.query.server;
     const mcNickname = req.query.name;
     const uuid = req.query.uuid;
@@ -124,6 +127,8 @@ app.get('/api/achievement', async (req, res) => {
 
     res.send('ok');
 
+    if(achievement.startsWith('recipes/')) return;
+
     const achievementName = achievement
         .split('/')
         .at(-1)
@@ -131,24 +136,41 @@ app.get('/api/achievement', async (req, res) => {
         .map(a => a.charAt(0).toUpperCase() + a.slice(1))
         .join(' ');
 
-    return utils.sendWebhookMessage(server.chatChannel, {
-        username: mcNickname,
-        avatarURL: `https://crafatar.com/avatars/${uuid}`
-    }, {
-        embeds: [
-            new MessageEmbed()
-                .setColor('#ffff00')
-                .setTitle('발전 과제')
-                .setDescription(`${mcNickname}님이 ${achievementName} 목표를 달성했습니다!`)
-                .setThumbnail(`https://crafatar.com/avatars/${uuid}`)
-                .setTimestamp()
-        ],
-        allowedMentions: {
-            parse: []
-        }
-    });
+    if(!achievements[serverID]) achievements[serverID] = {};
+    if(!achievementTimeouts[serverID]) achievementTimeouts[serverID] = {};
+
+    if(!achievements[serverID][uuid]) achievements[serverID][uuid] = [];
+    if(achievementTimeouts[serverID][uuid]) clearTimeout(achievementTimeouts[serverID][uuid]);
+
+    achievements[serverID][uuid].push(achievementName);
+
+    achievementTimeouts[serverID][uuid] = setTimeout(async () => {
+        const array = achievements[serverID][uuid];
+        const description = array.length > 3 ? `목표 ${array.length}개를 달성했습니다!` : `${array.join(', ')} 목표를 달성했습니다!`
+
+        achievements[serverID][uuid] = [];
+
+        await utils.sendWebhookMessage(server.chatChannel, {
+            username: mcNickname,
+            avatarURL: `https://crafatar.com/avatars/${uuid}`
+        }, {
+            embeds: [
+                new MessageEmbed()
+                    .setColor('#ffff00')
+                    .setTitle('발전 과제')
+                    .setDescription(`${mcNickname}님이 ${description}`)
+                    .setThumbnail(`https://crafatar.com/avatars/${uuid}`)
+                    .setTimestamp()
+            ],
+            allowedMentions: {
+                parse: []
+            }
+        });
+
+        achievementTimeouts[serverID][uuid] = null;
+    }, 100);
 });
 
 app.listen(setting.PORT, setting.WEB_IP, () => {
-    console.log(`webserver listening on ${setting.WEB_IP}:${setting.PORT}!`);
+    console.log(`webserver listening on ${setting.WEB_IP}:${setting.PORT}`);
 });
