@@ -64,6 +64,7 @@ app.get('/api/user/:action', async (req, res) => {
 
         for(let i in recentChat[serverID]) {
             const contentIndex = recentChat[serverID][i].findIndex(a => a.messageId);
+            if(contentIndex === -1) continue;
             const clickedPlayers = recentChat[serverID][i][contentIndex].clickedPlayers;
             if(clickedPlayers) recentChat[serverID][i][contentIndex].clickedPlayers = clickedPlayers.filter(a => a !== mcNickname);
         }
@@ -218,6 +219,7 @@ app.get('/api/spoiler', (req, res) => {
         if(recentChat[serverID][i].length < 4) return c;
 
         const contentIndex = recentChat[serverID][i].findIndex(a => a.messageId);
+        if(contentIndex === -1) return c;
 
         if(!recentChat[serverID][i][contentIndex].clickedPlayers) recentChat[serverID][i][contentIndex].clickedPlayers = [];
         if(!recentChat[serverID][i][contentIndex].clickedPlayers.includes(mcNickname) && recentChat[serverID][i][contentIndex].messageId === messageId)
