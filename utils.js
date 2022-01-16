@@ -225,7 +225,7 @@ const minecraftComponents = {
     '~~': 'strikethrough'
 }
 
-module.exports.markdownToMincraftComponent = component => {
+module.exports.markdownToMincraftComponent = (component, id) => {
     if(typeof component === 'string') component = [
         {
             text: component
@@ -236,7 +236,7 @@ module.exports.markdownToMincraftComponent = component => {
     component[0].text = component[0].text.split('**').join('§bold§');
     component[0].text = component[0].text.split('__').join('§underlined§');
 
-    component[0].messageId = uniqueString();
+    component[0].messageId = id || uniqueString();
 
     const minecraftComponentKeys = Object.keys(minecraftComponents);
 
