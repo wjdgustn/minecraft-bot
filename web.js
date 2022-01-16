@@ -238,9 +238,6 @@ app.get('/api/spoiler', (req, res) => {
     }
 
     if(sendMessage.length < 30) sendMessage.unshift('\n'.repeat(30 - sendMessage.length));
-    
-    // console.log(sendMessage);
-    // console.log(JSON.stringify(sendMessage, null, 4));
 
     server.stdin(`tellraw ${mcNickname} ${JSON.stringify(sendMessage)}`);
 });
