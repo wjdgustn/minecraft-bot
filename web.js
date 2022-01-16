@@ -65,7 +65,7 @@ app.get('/api/user/:action', async (req, res) => {
         for(let i in recentChat[serverID]) {
             const contentIndex = recentChat[serverID][i].findIndex(a => a.messageId);
             const clickedPlayers = recentChat[serverID][i][contentIndex].clickedPlayers;
-            recentChat[serverID][i][contentIndex].clickedPlayers = clickedPlayers.filter(a => a !== mcNickname);
+            if(clickedPlayers) recentChat[serverID][i][contentIndex].clickedPlayers = clickedPlayers.filter(a => a !== mcNickname);
         }
     }
 
