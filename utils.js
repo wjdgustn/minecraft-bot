@@ -269,7 +269,6 @@ module.exports.markdownToMincraftComponent = component => {
                 if(skipThis) return;
 
                 if(minecraftComponents[str] === 'spoiler' && i % 2 === 1 && !noLastClose) {
-                    console.log(json.text);
                     json.originalComponent = JSON.parse(JSON.stringify(json));
                     json.spoilerId = uniqueString();
                     json.clickEvent = {
@@ -281,8 +280,8 @@ module.exports.markdownToMincraftComponent = component => {
                         value: '클릭하여 스포일러 내용을 확인하세요!'
                     };
                     json.spoiler = true;
-                    json.text = '▇'.repeat(json.text.length);
-                    json.color = 'dark_gray';
+                    json.obfuscated = true;
+                    json.color = 'gray';
 
                     for(let c of Object.values(minecraftComponents)) if(c !== 'spoiler') json[c] = false;
                 }

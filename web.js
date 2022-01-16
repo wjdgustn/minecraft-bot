@@ -63,7 +63,7 @@ app.get('/api/user/:action', async (req, res) => {
         server.stdin(`tellraw ${mcNickname} ${JSON.stringify(sendMessage)}`);
 
         for(let i in recentChat[serverID]) {
-            const contentIndex = recentChat[serverID][i].findIndex(a => a.spoiler);
+            const contentIndex = recentChat[serverID][i].findIndex(a => a.messageId);
             const clickedPlayers = recentChat[serverID][i][contentIndex].clickedPlayers;
             recentChat[serverID][i][contentIndex].clickedPlayers = clickedPlayers.filter(a => a !== mcNickname);
         }
@@ -217,7 +217,7 @@ app.get('/api/spoiler', (req, res) => {
     copiedRecentChat = copiedRecentChat.map((c, i) => {
         if(recentChat[serverID][i].length < 4) return c;
 
-        const contentIndex = recentChat[serverID][i].findIndex(a => a.spoiler);
+        const contentIndex = recentChat[serverID][i].findIndex(a => a.messageId);
 
         if(!recentChat[serverID][i][contentIndex].clickedPlayers) recentChat[serverID][i][contentIndex].clickedPlayers = [];
         if(!recentChat[serverID][i][contentIndex].clickedPlayers.includes(mcNickname) && recentChat[serverID][i][contentIndex].messageId === messageId)
