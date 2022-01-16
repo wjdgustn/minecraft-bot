@@ -1,7 +1,10 @@
 const setting = require('../setting.json');
+const utils = require('../utils');
 
 const Server = require('../class/server');
 const Waterfall = require('../class/waterfall');
+
+const { recentChat } = require('../web');
 
 const ServerDB = require('../schemas/server');
 
@@ -30,6 +33,7 @@ module.exports = client => {
 
              const highestRole = message.member.roles.highest;
              const jsonText = [
+                 '',
                  {
                      text: '[Discord] ',
                      color: '#5865F2'
@@ -39,12 +43,16 @@ module.exports = client => {
                      color: highestRole.id === message.guild.id ? 'white' : highestRole.hexColor
                  },
                  {
-                     text: `: ${message.cleanContent}`,
-                     color: 'white'
-                 }
+                     text: ': '
+                 },
+                 ...utils.markdownToMincraftComponent(message.content)
              ];
 
-             return server.stdin(`tellraw @a ${JSON.stringify(jsonText)}`);
+             server.stdin(`tellraw @a ${JSON.stringify(jsonText)}`);
+
+             if(!recentChat[server.id]) recentChat[server.id] = [];
+             recentChat[server.id].push(jsonText);
+             if(recentChat[server.id].length > 30) recentChat[server.id].shift();
          }
     });
 }

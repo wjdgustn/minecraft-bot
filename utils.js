@@ -1,6 +1,7 @@
 const Url = require('url');
 const querystring = require('querystring');
 const fs = require('fs');
+const uniqueString = require('unique-string');
 
 let client;
 
@@ -213,4 +214,121 @@ module.exports.sendWebhookMessage = async (channel, user = {
     message.avatarURL = user.avatarURL;
 
     return webhook.send(message);
+}
+
+const minecraftComponents = {
+    '||': 'spoiler',
+    '§bold§': 'bold',
+    '*': 'italic',
+    '_': 'italic',
+    '§underlined§': 'underlined',
+    '~~': 'strikethrough'
+}
+
+module.exports.markdownToMincraftComponent = component => {
+    if(typeof component === 'string') component = [
+        {
+            text: component
+        }
+    ];
+    if(!Array.isArray(component)) component = [component];
+
+    component[0].text = component[0].text.split('**').join('§bold§');
+    component[0].text = component[0].text.split('__').join('§underlined§');
+
+    component[0].messageId = uniqueString();
+
+    const minecraftComponentKeys = Object.keys(minecraftComponents);
+
+    for(let i in component) for(let key of minecraftComponentKeys)
+        component[i].text = component[i].text.split(`\\${key}`).join(`§safe${minecraftComponents[key]}§`);
+
+    const firstString = component[0].text;
+
+    const loopComponents = [];
+    for(let i in minecraftComponentKeys) loopComponents.push(...minecraftComponentKeys.slice(Number(i)));
+
+    for(let str of loopComponents) {
+        const copiedComponent = JSON.parse(JSON.stringify(component));
+        for(let i in component) {
+            const c = copiedComponent[i];
+            
+            let arr = c.text.split(str);
+            const noLastClose = !(arr.length % 2);
+
+            let skipThis = false;
+            arr = arr.map((a, i) => {
+                const json = JSON.parse(JSON.stringify(c));
+
+                json.text = a;
+                for(let c of Object.keys(minecraftComponents)) {
+                    const splited = firstString.split(`${str}${json.text}${i === arr.length - 1 && noLastClose ? '' : str}`);
+                    if(splited[0].includes(c) && splited[1]?.includes(c)) skipThis = true;
+                }
+
+                if(skipThis) return;
+
+                if(minecraftComponents[str] === 'spoiler' && i % 2 === 1 && !noLastClose) {
+                    console.log(json.text);
+                    json.originalComponent = JSON.parse(JSON.stringify(json));
+                    json.spoilerId = uniqueString();
+                    json.clickEvent = {
+                        action: 'run_command',
+                        value: `/openspoiler §messageid§ ${json.spoilerId}`
+                    };
+                    json.hoverEvent = {
+                        action: 'show_text',
+                        value: '클릭하여 스포일러 내용을 확인하세요!'
+                    };
+                    json.spoiler = true;
+                    json.text = '▇'.repeat(json.text.length);
+                    json.color = 'dark_gray';
+
+                    for(let c of Object.values(minecraftComponents)) if(c !== 'spoiler') json[c] = false;
+                }
+                else {
+                    json[minecraftComponents[str]] = !noLastClose && (json[minecraftComponents[str]] || i % 2 === 1);
+
+                    if(!json.spoiler) {
+                        delete json.spoilerId;
+                        delete json.clickEvent;
+                    }
+                }
+                return json;
+            });
+            if(skipThis) continue;
+
+            if(noLastClose) arr[arr.length - 1].text = `§safe${minecraftComponents[str]}§${arr[arr.length - 1].text}`;
+
+            component.splice(Number(i) + (component.length - copiedComponent.length), 1, ...arr);
+            component = component.filter(c => c.text);
+        }
+    }
+
+    component = component.map(a => {
+        for(let c of Object.keys(minecraftComponents)) if(a.text.includes(c)) {
+            a = module.exports.markdownToMincraftComponent(a);
+            break;
+        }
+        return a;
+    });
+
+    const result = [];
+    const arraySolver = a => {
+        if(Array.isArray(a)) for(let aa of a) arraySolver(aa);
+        else result.push(a);
+    }
+    arraySolver(component);
+
+    for(let i in result) {
+        for(let key of minecraftComponentKeys)
+            result[i].text = result[i].text.split(`§safe${minecraftComponents[key]}§`).join(key);
+        result[i].text = result[i].text.split('§bold§').join('**');
+        result[i].text = result[i].text.split('§underlined§').join('__');
+        if(result[i].clickEvent?.value) result[i].clickEvent.value = result[i].clickEvent.value.split('§messageid§').join(result[0].messageId);
+
+        if(Number(i)) delete result[i].messageId;
+    }
+
+    return result;
 }

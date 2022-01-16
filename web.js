@@ -49,6 +49,26 @@ app.get('/api/user/:action', async (req, res) => {
 
     const isJoin = req.params.action === 'join';
 
+    if(isJoin) {
+        if(!recentChat[serverID]) recentChat[serverID] = [];
+        let copiedRecentChat = JSON.parse(JSON.stringify(recentChat[serverID]));
+
+        const sendMessage = [];
+        for(let i in copiedRecentChat) {
+            const c = copiedRecentChat[i];
+            if(i < copiedRecentChat.length - 1) c[c.length - 1].text += '\n';
+            if(c) sendMessage.push(c.filter(a => a !== undefined));
+        }
+
+        server.stdin(`tellraw ${mcNickname} ${JSON.stringify(sendMessage)}`);
+
+        for(let i in recentChat[serverID]) {
+            const contentIndex = recentChat[serverID][i].findIndex(a => a.spoiler);
+            const clickedPlayers = recentChat[serverID][i][contentIndex].clickedPlayers;
+            recentChat[serverID][i][contentIndex].clickedPlayers = clickedPlayers.filter(a => a !== mcNickname);
+        }
+    }
+
     return utils.sendWebhookMessage(server.chatChannel, {
         username: '서버 알림',
         avatarURL: client.user.avatarURL()
@@ -63,6 +83,9 @@ app.get('/api/user/:action', async (req, res) => {
         ]
     });
 });
+
+const recentChat = {};
+module.exports.recentChat = recentChat;
 
 app.get('/api/chat', async (req, res) => {
     const serverID = req.query.server;
@@ -81,21 +104,22 @@ app.get('/api/chat', async (req, res) => {
     res.send('ok');
 
     const jsonText = [
+        '',
         {
             text: '[Minecraft] ',
             color: 'green'
         },
         {
-            text: mcNickname,
-            color: 'white'
+            text: `${mcNickname}: `
         },
-        {
-            text: `: ${content}`,
-            color: 'white'
-        }
+        ...utils.markdownToMincraftComponent(content)
     ];
 
     server.stdin(`tellraw @a ${JSON.stringify(jsonText)}`);
+
+    if(!recentChat[serverID]) recentChat[serverID] = [];
+    recentChat[serverID].push(jsonText);
+    if(recentChat[serverID].length > 30) recentChat[serverID].shift();
 
     return utils.sendWebhookMessage(server.chatChannel, {
         username: mcNickname,
@@ -169,6 +193,54 @@ app.get('/api/achievement', (req, res) => {
 
         achievementTimeouts[serverID][uuid] = null;
     }, 100);
+});
+
+app.get('/api/spoiler', (req, res) => {
+    const serverID = req.query.server;
+    const mcNickname = req.query.name;
+    const messageId = req.query.message;
+    const spoilerId = req.query.spoiler;
+
+    if(!serverID) return res.status(400).send('Missing server');
+    if(!mcNickname) return res.status(400).send('Missing nickname');
+    if(!messageId) return res.status(400).send('Missing message');
+    if(!spoilerId) return res.status(400).send('Missing spoiler');
+
+    const server = Server.get(serverID);
+    if(!server) return res.status(404).send('Server not found');
+
+    res.send('ok');
+
+    if(!recentChat[serverID]) recentChat[serverID] = [];
+    let copiedRecentChat = JSON.parse(JSON.stringify(recentChat[serverID]));
+
+    copiedRecentChat = copiedRecentChat.map((c, i) => {
+        if(recentChat[serverID][i].length < 4) return c;
+
+        const contentIndex = recentChat[serverID][i].findIndex(a => a.spoiler);
+
+        if(!recentChat[serverID][i][contentIndex].clickedPlayers) recentChat[serverID][i][contentIndex].clickedPlayers = [];
+        if(!recentChat[serverID][i][contentIndex].clickedPlayers.includes(mcNickname) && recentChat[serverID][i][contentIndex].messageId === messageId)
+            recentChat[serverID][i][contentIndex].clickedPlayers.push(mcNickname);
+
+        if(recentChat[serverID][i][contentIndex].clickedPlayers.includes(mcNickname))
+            c = c.map(a => a.originalComponent || a);
+        return c;
+    });
+
+    const sendMessage = [];
+    for(let i in copiedRecentChat) {
+        const c = copiedRecentChat[i];
+        if(i < copiedRecentChat.length - 1) c[c.length - 1].text += '\n';
+        if(c) sendMessage.push(c.filter(a => a !== undefined));
+    }
+
+    if(sendMessage.length < 30) sendMessage.unshift('\n'.repeat(30 - sendMessage.length));
+    
+    // console.log(sendMessage);
+    // console.log(JSON.stringify(sendMessage, null, 4));
+
+    server.stdin(`tellraw ${mcNickname} ${JSON.stringify(sendMessage)}`);
 });
 
 app.listen(setting.PORT, setting.WEB_IP, () => {
