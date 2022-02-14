@@ -24,7 +24,7 @@ const required_dir = [
 
 const auto_dl = {
     './assets/plugins/worldedit.jar': 'https://dev.bukkit.org/projects/worldedit/files/3559523/download',
-    './assets/plugins/minecraftBotPaper.jar': 'https://cdn.discordapp.com/attachments/389391148797657089/932060232857829467/minecraftBotPaper.jar'
+    './assets/plugins/minecraftBotPaper.jar': 'https://cdn.discordapp.com/attachments/389391148797657089/942618660294516786/minecraftBotPaper.jar'
 }
 
 module.exports = class Server extends Process {
