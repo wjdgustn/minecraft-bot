@@ -5,6 +5,7 @@ const setting = require('./setting.json');
 const utils = require('./utils');
 
 const Server = require('./class/server');
+const Process = require('./class/process');
 
 const ServerDB = require('./schemas/server');
 
@@ -240,6 +241,34 @@ app.get('/api/spoiler', (req, res) => {
     if(sendMessage.length < 30) sendMessage.unshift('\n'.repeat(30 - sendMessage.length));
 
     server.stdin(`tellraw ${mcNickname} ${JSON.stringify(sendMessage)}`);
+});
+
+app.get('/api/stdin', (req, res) => {
+    const serverID = req.query.server;
+    const stdin = req.query.stdin;
+
+    if(!serverID) return res.status(400).send('Missing server');
+    if(!stdin) return res.status(400).send('Missing stdin');
+
+    const server = Server.get(serverID);
+    if(!server) return res.status(404).send('Server not found');
+
+    res.send('ok');
+
+    server.stdin(stdin + '\n');
+});
+
+app.get('/api/waterfallstdin', (req, res) => {
+    const stdin = req.query.stdin;
+
+    if(!stdin) return res.status(400).send('Missing stdin');
+
+    const server = Process.get('waterfall');
+    if(!server) return res.status(404).send('Server not found');
+
+    res.send('ok');
+
+    server.stdin(stdin + '\n');
 });
 
 app.listen(setting.PORT, setting.WEB_IP, () => {
