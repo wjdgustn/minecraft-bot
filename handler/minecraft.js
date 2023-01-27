@@ -40,7 +40,7 @@ module.exports = client => {
                  },
                  {
                      text: message.member.displayName,
-                     color: message.member.displayColor ? message.member.displayColor.toString(16) : 'white'
+                     color: message.member.displayColor ? `#${message.member.displayColor.toString(16)}` : 'white'
                  },
                  {
                      text: ': '
