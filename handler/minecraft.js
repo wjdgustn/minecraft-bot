@@ -79,7 +79,7 @@ module.exports = client => {
             },
             {
                 text: message.member.displayName,
-                color: highestRole.id === message.guild.id ? 'white' : highestRole.hexColor
+                color: message.member.displayColor ? `#${message.member.displayColor.toString(16)}` : 'white'
             },
             {
                 text: ': '
